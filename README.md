@@ -1,2 +1,2 @@
 # PHPWord
-PHPWord extended
+PHPWord extended v1
