@@ -330,9 +330,9 @@ class TemplateProcessor
         $documentPart = substr($this->tempDocumentMainPart, 0, $macroPosition);
         $wpPosition = strrpos($documentPart, '<w:p ');
         $wpContent = substr($documentPart, $wpPosition);
-        $wtPos = strpos($wpContent, '<w:t>');
+        $wrPos = strpos($wpContent, '<w:r>');
 
-        $afterMacro = substr($wpContent, 0, $wtPos+5);
+        $afterMacro = substr($wpContent, 0, $wrPos+5).'<w:t>';
         $beforeMacro = '</w:t></w:r></w:p>';
         $insertXml = $beforeMacro.$elementXml.$afterMacro;
 
