@@ -310,8 +310,10 @@ class TemplateProcessor
     }
 
     /**
-     * @param string $search
+     * @param string                                     $search
      * @param \PhpOffice\PhpWord\Element\AbstractElement $complexType
+     *
+     * @return \PhpOffice\PhpWord\TemplateProcessor
      */
     public function setComplexInlineBlock($search, \PhpOffice\PhpWord\Element\AbstractElement $complexType)
     {
@@ -330,13 +332,21 @@ class TemplateProcessor
         $documentPart = substr($this->tempDocumentMainPart, 0, $macroPosition);
         $wpPosition = strrpos($documentPart, '<w:p ');
         $wpContent = substr($documentPart, $wpPosition);
-        $wrPos = strpos($wpContent, '<w:r>');
 
-        $afterMacro = substr($wpContent, 0, $wrPos+5).'<w:t>';
+        $wrPosNoBracket = strpos($wpContent, '<w:t ');
+        $wrPosNoBracket = $wrPosNoBracket === false ? $macroPosition : $wrPosNoBracket;
+
+        $wrPosWithBracket = strpos($wpContent, '<w:t>');
+        $wrPosWithBracket = $wrPosWithBracket === false ? $macroPosition : $wrPosWithBracket;
+
+        $afterMacro = substr($wpContent, 0, min($wrPosWithBracket, $wrPosNoBracket)).'<w:t>';
+
         $beforeMacro = '</w:t></w:r></w:p>';
         $insertXml = $beforeMacro.$elementXml.$afterMacro;
 
         $this->tempDocumentMainPart = substr_replace($this->tempDocumentMainPart, $insertXml, $macroPosition, strlen($macro));
+
+        return $this;
     }
 
     /**
