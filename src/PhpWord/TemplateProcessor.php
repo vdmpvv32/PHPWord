@@ -350,6 +350,38 @@ class TemplateProcessor
     }
 
     /**
+     * @param string                                     $search
+     *
+     * @return \PhpOffice\PhpWord\TemplateProcessor
+     */
+    public function setPageBrake($search)
+    {
+        $macro = static::ensureMacroCompleted($search);
+
+        $elementXml = '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+
+        $macroPosition = $this->findMacro($macro);
+        $documentPart = substr($this->tempDocumentMainPart, 0, $macroPosition);
+        $wpPosition = strrpos($documentPart, '<w:p ');
+        $wpContent = substr($documentPart, $wpPosition);
+
+        $wrPosNoBracket = strpos($wpContent, '<w:t ');
+        $wrPosNoBracket = $wrPosNoBracket === false ? $macroPosition : $wrPosNoBracket;
+
+        $wrPosWithBracket = strpos($wpContent, '<w:t>');
+        $wrPosWithBracket = $wrPosWithBracket === false ? $macroPosition : $wrPosWithBracket;
+
+        $afterMacro = substr($wpContent, 0, min($wrPosWithBracket, $wrPosNoBracket)).'<w:t>';
+
+        $beforeMacro = '</w:t></w:r></w:p>';
+        $insertXml = $beforeMacro.$elementXml.$afterMacro;
+
+        $this->tempDocumentMainPart = substr_replace($this->tempDocumentMainPart, $insertXml, $macroPosition, strlen($macro));
+
+        return $this;
+    }
+
+    /**
      * @param mixed $search
      * @param mixed $replace
      * @param int $limit
