@@ -911,11 +911,34 @@ class TemplateProcessor
     public function replaceBlock($blockname, $replacement)
     {
         $matches = array();
-        preg_match(
-            '/(<\?xml.*)(<w:p.*>\${' . $blockname . '}<\/w:.*?p>)(.*)(<w:p.*\${\/' . $blockname . '}<\/w:.*?p>)/is',
-            $this->tempDocumentMainPart,
-            $matches
-        );
+
+        // preg_match(
+        //     '/(<\?xml.*)(<w:p .*>\${' . $blockname . '}<\/w:.*?p>)(.*)(<w:p.*\${\/' . $blockname . '}<\/w:.*?p>)/is',
+        //     $this->tempDocumentMainPart,
+        //     $matches
+        // );
+        //
+        // if (isset($matches[3])) {
+        //     $this->tempDocumentMainPart = str_replace(
+        //         $matches[2] . $matches[3] . $matches[4],
+        //         $replacement,
+        //         $this->tempDocumentMainPart
+        //     );
+        // }
+
+        if($replacement) {
+            preg_match(
+                '/(<\?xml.*)(\${' . $blockname . '})(.*)(\${\/' . $blockname . '})/is',
+                $this->tempDocumentMainPart,
+                $matches
+            );
+        } else {
+            preg_match(
+                '/(<\?xml.*)(<w:p .*>\${' . $blockname . '})(.*)(\${\/' . $blockname . '}<\/w:.*?p>)/is',
+                $this->tempDocumentMainPart,
+                $matches
+            );
+        }
 
         if (isset($matches[3])) {
             $this->tempDocumentMainPart = str_replace(
